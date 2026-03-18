@@ -64,11 +64,17 @@ def get_or_create_set(name):
 
 def get_persons():
     res = supabase.table("persons").select("*").execute()
-    return pd.DataFrame(res.data)
+    df = pd.DataFrame(res.data)
+    if df.empty:
+        df = pd.DataFrame(columns=["id", "name"])
+    return df
 
 def get_sets():
     res = supabase.table("training_sets").select("*").execute()
-    return pd.DataFrame(res.data)
+    df = pd.DataFrame(res.data)
+    if df.empty:
+        df = pd.DataFrame(columns=["id", "name"])
+    return df
 
 def get_sessions():
     sessions_res = supabase.table("sessions").select("*").execute()
@@ -89,7 +95,10 @@ def get_sessions():
             "training_set": ts_name,
             "attendees": ", ".join(attendees)
         })
-    return pd.DataFrame(result)
+    df_result = pd.DataFrame(result)
+    if df_result.empty:
+        df_result = pd.DataFrame(columns=["id","date","training_set","attendees"])
+    return df_result
 
 # -------------------------
 # UI
