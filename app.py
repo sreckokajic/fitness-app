@@ -31,7 +31,7 @@ if not check_password():
 # DATABASE CONNECTION
 # -------------------------
 url = "https://pjeomsygofqwfjtyybzy.supabase.co"  # your Supabase URL
-key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqZW9tc3lnb2ZxdHl5Ynp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NTU0NTQsImV4cCI6MjA4OTQzMTQ1NH0.JmnaMEwOTXAmopRi5D-PsYUSfvrNhm4Mz-BhtEw2Q-o"
+key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqZW9tc3lnb2Zxd2ZqdHl5Ynp5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mzg1NTQ1NCwiZXhwIjoyMDg5NDMxNDU0fQ.DmUFOtsxJCeo_cQonj1Hp_UYagdi_iZHZm7bidm7uGw"
 supabase: Client = create_client(url, key)
 
 # -------------------------
