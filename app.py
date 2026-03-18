@@ -1,4 +1,30 @@
 import streamlit as st
+
+# -------------------------
+# PASSWORD PROTECTION
+# -------------------------
+
+def check_password():
+    def password_entered():
+        if st.session_state["password"] == "reformerpilates2026":
+            st.session_state["authenticated"] = True
+        else:
+            st.session_state["authenticated"] = False
+
+    if "authenticated" not in st.session_state:
+        st.text_input("Enter password", type="password", on_change=password_entered, key="password")
+        return False
+    elif not st.session_state["authenticated"]:
+        st.text_input("Enter password", type="password", on_change=password_entered, key="password")
+        st.error("Wrong password")
+        return False
+    else:
+        return True
+
+
+if not check_password():
+    st.stop()
+
 import sqlite3
 from datetime import datetime, timedelta, date
 import pandas as pd
