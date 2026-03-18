@@ -34,15 +34,13 @@ import matplotlib.pyplot as plt
 # DATABASE
 # -------------------------
 import psycopg2
+import streamlit as st
 
+# Use connection string
 conn = psycopg2.connect(
-    host="db.pjeomsygofqwfjtyybzy.supabase.co",
-    database="postgres",
-    user="postgres",
-    password="reformerpilates2026",
-    port="5432",
-    sslmode="require"
+    "postgresql://postgres:reformerpilates2026@db.pjeomsygofqwfjtyybzy.supabase.co:5432/postgres?sslmode=require"
 )
+
 cursor = conn.cursor()
 
 cursor.execute("""
