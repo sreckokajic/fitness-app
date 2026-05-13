@@ -311,27 +311,39 @@ def get_sets():
 
 @st.cache_data(ttl=30)
 def get_sessions():
-    sessions_res = supabase.table("sessions").select("*").order("date", desc=True).execute()
-    sessions = sessions_res.data
+    # 3 bulk fetches total — no per-row queries
+    sessions_res  = supabase.table("sessions").select("*").order("date", desc=True).execute()
+    sets_res      = supabase.table("training_sets").select("id, name").execute()
+    persons_res   = supabase.table("persons").select("id, name").execute()
+    attendance_res = supabase.table("attendance").select("session_id, person_id").execute()
+
+    if not sessions_res.data:
+        return pd.DataFrame(columns=["id", "date", "training_set", "attendees", "attendees_str"])
+
+    # Build lookup dicts in memory
+    set_name   = {r["id"]: r["name"] for r in sets_res.data}
+    person_name = {r["id"]: r["name"] for r in persons_res.data}
+
+    # Group attendees by session_id
+    from collections import defaultdict
+    attendees_by_session = defaultdict(list)
+    for a in attendance_res.data:
+        name = person_name.get(a["person_id"], "")
+        if name:
+            attendees_by_session[a["session_id"]].append(name)
+
     result = []
-    for s in sessions:
-        ts_res = supabase.table("training_sets").select("*").eq("id", s["training_set_id"]).execute()
-        ts_name = ts_res.data[0]["name"] if ts_res.data else ""
-        att_res = supabase.table("attendance").select("*").eq("session_id", s["id"]).execute()
-        attendees = []
-        for a in att_res.data:
-            p_res = supabase.table("persons").select("*").eq("id", a["person_id"]).execute()
-            if p_res.data:
-                attendees.append(p_res.data[0]["name"])
+    for s in sessions_res.data:
+        attendees = sorted(attendees_by_session.get(s["id"], []))
         result.append({
-            "id": s["id"],
-            "date": s["date"],
-            "training_set": ts_name,
-            "attendees": attendees,
-            "attendees_str": ", ".join(sorted(attendees)),
+            "id":            s["id"],
+            "date":          s["date"],
+            "training_set":  set_name.get(s["training_set_id"], ""),
+            "attendees":     attendees,
+            "attendees_str": ", ".join(attendees),
         })
-    df = pd.DataFrame(result)
-    return df if not df.empty else pd.DataFrame(columns=["id", "date", "training_set", "attendees", "attendees_str"])
+
+    return pd.DataFrame(result)
 
 def invalidate_cache():
     get_persons.clear()
